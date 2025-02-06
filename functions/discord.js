@@ -1,68 +1,6 @@
 const nacl = require("tweetnacl");
 const axios = require("axios");
 
-// Simulate a heavy task
-const simulateHeavyTask = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-  return "Task completed!";
-};
-
-// Command definitions
-const commands = {
-  ping: {
-    name: "ping",
-    execute: async () => {
-      await simulateHeavyTask();
-      return { content: "بينج بونج! 🏓" };
-    },
-  },
-  hello: {
-    name: "hello",
-    execute: async (interaction) => {
-      await simulateHeavyTask();
-      return {
-        content: `مرحبا ${interaction.member.user.username}! 👋`,
-      };
-    },
-  },
-  // roll: {
-  //   name: "roll",
-  //   execute: async () => {
-  //     await simulateHeavyTask();
-  //     return {
-  //       content: `🎲 لعبت دورك: ${Math.floor(Math.random() * 6) + 1}`,
-  //     };
-  //   },
-  // },
-};
-
-// Send a follow-up message to Discord
-const sendFollowUp = async (application_id, token, response) => {
-  const webhookUrl = `https://discord.com/api/v10/webhooks/${application_id}/${token}`;
-
-  try {
-    await axios.post(webhookUrl, response, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
-      },
-    });
-  } catch (error) {
-    console.error(
-      "Error sending follow-up:",
-      error.response?.data || error.message,
-    );
-    throw error;
-  }
-};
-
-// Command handler
-const handleCommand = async (interaction) => {
-  const command = commands[interaction.data.name];
-  if (!command) return { content: "أمر غير معروف!" };
-  return await command.execute(interaction);
-};
-
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") return { statusCode: 405 };
 
@@ -89,8 +27,12 @@ exports.handler = async (event) => {
 
   // Handle commands with deferred response
   if (interaction.type === 2) {
-    // Immediately respond with "thinking" state
-    const deferResponse = {
+    axios
+      .post(event.rawUrl.replace("discord", "followup"), {
+        interaction,
+      })
+      .catch(console.error);
+    return {
       statusCode: 200,
       headers: {
         "Content-Type": "application/json",
@@ -99,33 +41,6 @@ exports.handler = async (event) => {
         type: 5, // Deferred response with "thinking" state
       }),
     };
-
-    // Process the command asynchronously
-    const processCommand = async () => {
-      try {
-        const response = await handleCommand(interaction);
-        await sendFollowUp(interaction.application_id, interaction.token, {
-          ...response,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      } catch (error) {
-        console.error("Error processing command:", error);
-        await sendFollowUp(interaction.application_id, interaction.token, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          content: "An error occurred while processing your command.",
-        });
-      }
-    };
-
-    // Fire and forget the processing
-    processCommand().catch(console.error);
-
-    // Return the defer response immediately
-    return deferResponse;
   }
 
   // Handle PING
