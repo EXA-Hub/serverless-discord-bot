@@ -2,6 +2,10 @@
 TOKEN="YOUR_BOT_TOKEN"
 APP_ID="YOUR_APP_ID"
 
+###########################
+#  لا تنسى حذفهم قبل الرفع  #
+###########################
+
 curl -X POST \
 -H "Content-Type: application/json" \
 -H "Authorization: Bot $TOKEN" \
