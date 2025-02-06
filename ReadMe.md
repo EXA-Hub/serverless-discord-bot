@@ -74,29 +74,13 @@ netlify env:list
 
 ### 4. تسجيل أوامر البوت
 
-1. عدّل ملف `setupCommands.sh`:
+1. نفذ الأمر:
 
 ```bash
-#!/bin/bash
-TOKEN="YOUR_BOT_TOKEN"
-APP_ID="YOUR_APP_ID"
-
-curl -X POST \
--H "Content-Type: application/json" \
--H "Authorization: Bot $TOKEN" \
-"https://discord.com/api/v10/applications/$APP_ID/commands" \
--d '{
-  "name": "ping",
-  "description": "Replies with Pong!"
-}'
+bash ./setupCommadns.sh
 ```
 
-2. نفذ الأمر:
-
-```bash
-chmod +x setupCommands.sh
-./setupCommands.sh
-```
+2. إتبع التعليمات لإضافة الأوامر للبوت
 
 ### 5. تكوين Discord Interactions Endpoint
 
