@@ -1,9 +1,12 @@
+#!/bin/bash
+TOKEN="YOUR_BOT_TOKEN"
+APP_ID="YOUR_APP_ID"
+
 curl -X POST \
--H "Authorization: Bot {{{{{{{{{{{{{{YOUR_BOT_TOKEN}}}}}}}}}}}}}}" \
 -H "Content-Type: application/json" \
-https://discord.com/api/v10/applications/{{{{{{{{{{{{{{{{{YOUR_APP_ID}}}}}}}}}}}}}}}}}/commands \
+-H "Authorization: Bot $TOKEN" \
+"https://discord.com/api/v10/applications/$APP_ID/commands" \
 -d '{
   "name": "ping",
-  "description": "Replies with Pong!",
-  "type": 1
+  "description": "Replies with Pong!"
 }'
