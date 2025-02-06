@@ -30,7 +30,7 @@ const handleCommand = (interaction) => {
 };
 
 exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") return { statusCode: 405 };
+  // if (event.httpMethod !== "POST") return { statusCode: 405 };
 
   const signature = event.headers["x-signature-ed25519"];
   const timestamp = event.headers["x-signature-timestamp"];
@@ -39,7 +39,7 @@ exports.handler = async (event) => {
   const isVerified = nacl.sign.detached.verify(
     Buffer.from(timestamp + body),
     Buffer.from(signature, "hex"),
-    Buffer.from(process.env.DISCORD_PUBLIC_KEY, "hex")
+    Buffer.from(process.env.DISCORD_PUBLIC_KEY, "hex"),
   );
 
   if (!isVerified) return { statusCode: 401 };
@@ -57,6 +57,16 @@ exports.handler = async (event) => {
 
   // Handle commands
   if (interaction.type === 2) {
+    console.log("COMMAND received");
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        type: 4,
+        data: {
+          content: "Pong! 🏓",
+        },
+      }),
+    };
     const response = handleCommand(interaction);
     return {
       statusCode: 200,
