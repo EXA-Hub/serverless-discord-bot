@@ -65,7 +65,7 @@ chmod +x setupCommands.sh
 
 ## هيكل المشروع
 
-```
+```shell
 .
 ├── functions/
 │   └── discord.js      # معالج الأوامر الرئيسي
