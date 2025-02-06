@@ -24,8 +24,8 @@ const commands = {
 // Command handler
 const handleCommand = (interaction) => {
   const command = commands[interaction.data.name];
+  console.log(interaction);
   if (!command) return { content: "Unknown command!" };
-
   return command.execute(interaction);
 };
 
@@ -48,6 +48,7 @@ exports.handler = async (event) => {
 
   // Handle PING
   if (interaction.type === 1) {
+    console.log("PING received");
     return {
       statusCode: 200,
       body: JSON.stringify({ type: 1 }),
