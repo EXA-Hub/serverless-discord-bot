@@ -8,12 +8,14 @@
 - تكامل مع منصة Netlify
 - تحقق من صحة طلبات Discord
 - تنفيذ سريع وموثوق
+- نشر تلقائي مع كل تحديث للكود
 
 ## المتطلبات الأساسية
 
 - حساب Discord Developer
 - حساب Netlify
-- Node.js مثبت على جهازك
+- Node.js v16 أو أحدث
+- npm v7 أو أحدث
 
 ## خطوات الإعداد
 
@@ -28,23 +30,67 @@
 ### 2. إعداد المشروع محلياً
 
 ```bash
+# استنساخ المشروع
 git clone https://github.com/EXA-Hub/serverless-discord-bot-netlify.git
 cd serverless-discord-bot-netlify
+
+# تثبيت اعتماديات المشروع
 npm install
+
+# تثبيت Netlify CLI
+npm install -g netlify-cli
+
+# تسجيل الدخول إلى Netlify
+netlify login
+
+# ربط المشروع بموقع Netlify
+netlify init
+
+# تشغيل المشروع محلياً للتطوير
+netlify dev
 ```
 
 ### 3. نشر المشروع على Netlify
 
-1. قم بربط المستودع مع Netlify
-2. أضف المتغيرات البيئية التالية:
+```bash
+# نشر المشروع يدوياً
+netlify deploy --prod
+
+# إعداد المتغيرات البيئية
+netlify env:set DISCORD_PUBLIC_KEY your-public-key
+netlify env:set DISCORD_TOKEN your-bot-token
+
+# عرض المتغيرات البيئية الحالية
+netlify env:list
+```
+
+يمكنك أيضاً إعداد المتغيرات البيئية من لوحة تحكم Netlify:
+
+1. انتقل إلى إعدادات المشروع
+2. اختر "Build & deploy" > "Environment"
+3. أضف المتغيرات التالية:
    - `DISCORD_PUBLIC_KEY`
    - `DISCORD_TOKEN`
 
 ### 4. تسجيل أوامر البوت
 
 1. عدّل ملف `setupCommands.sh`:
-   - استبدل `YOUR_BOT_TOKEN`
-   - استبدل `YOUR_APP_ID`
+
+```bash
+#!/bin/bash
+TOKEN="YOUR_BOT_TOKEN"
+APP_ID="YOUR_APP_ID"
+
+curl -X POST \
+-H "Content-Type: application/json" \
+-H "Authorization: Bot $TOKEN" \
+"https://discord.com/api/v10/applications/$APP_ID/commands" \
+-d '{
+  "name": "ping",
+  "description": "Replies with Pong!"
+}'
+```
+
 2. نفذ الأمر:
 
 ```bash
@@ -54,14 +100,32 @@ chmod +x setupCommands.sh
 
 ### 5. تكوين Discord Interactions Endpoint
 
-1. انسخ رابط وظيفة Netlify (`https://[your-site].netlify.app/.netlify/functions/discord`)
-2. الصق الرابط في "Interactions Endpoint URL" في إعدادات تطبيق Discord
+1. احصل على رابط وظيفة Netlify:
 
-## الأوامر المتاحة
+```bash
+netlify sites:list
+```
 
-- `/ping` - يرد البوت بـ "Pong! 🏓"
-- `/hello` - يرحب البوت بالمستخدم
-- `/roll` - يرمي نرد افتراضي (1-6)
+2. الصق الرابط (`https://[your-site].netlify.app/.netlify/functions/discord`) في "Interactions Endpoint URL" في إعدادات تطبيق Discord
+
+## أوامر Netlify المفيدة
+
+```bash
+# عرض سجلات الوظائف
+netlify functions:logs
+
+# اختبار الوظائف محلياً
+netlify functions:serve
+
+# نشر وظيفة محددة
+netlify functions:deploy discord
+
+# عرض معلومات المشروع
+netlify status
+
+# فتح لوحة تحكم المشروع في المتصفح
+netlify open
+```
 
 ## هيكل المشروع
 
@@ -70,13 +134,35 @@ chmod +x setupCommands.sh
 ├── functions/
 │   └── discord.js      # معالج الأوامر الرئيسي
 ├── setupCommands.sh    # سكريبت تسجيل الأوامر
-└── netlify.toml       # إعدادات Netlify
+├── netlify.toml       # إعدادات Netlify
+├── package.json      # تبعيات المشروع
+└── README.md        # توثيق المشروع
+```
+
+## حل المشاكل الشائعة
+
+- إذا فشل النشر، تحقق من سجلات البناء:
+
+```bash
+netlify build --debug
+```
+
+- للتحقق من حالة الوظائف:
+
+```bash
+netlify functions:list
 ```
 
 ## المساهمة
 
-نرحب بالمساهمات! يرجى إنشاء fork للمشروع وتقديم pull request.
+نرحب بالمساهمات! يرجى اتباع هذه الخطوات:
+
+1. عمل fork للمشروع
+2. إنشاء فرع للميزة (`git checkout -b feature/amazing-feature`)
+3. عمل commit للتغييرات (`git commit -m 'Add amazing feature'`)
+4. رفع التغييرات (`git push origin feature/amazing-feature`)
+5. فتح Pull Request
 
 ## الترخيص
 
-هذا المشروع مرخص تحت MIT.
+هذا المشروع مرخص تحت MIT. انظر ملف `LICENSE` للمزيد من التفاصيل.
