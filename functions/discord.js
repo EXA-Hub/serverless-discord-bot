@@ -64,9 +64,7 @@ const handleCommand = async (interaction) => {
 };
 
 exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405 };
-  }
+  if (event.httpMethod !== "POST") return { statusCode: 405 };
 
   const signature = event.headers["x-signature-ed25519"];
   const timestamp = event.headers["x-signature-timestamp"];
@@ -88,17 +86,6 @@ exports.handler = async (event) => {
   }
 
   const interaction = JSON.parse(body);
-
-  // Handle PING
-  if (interaction.type === 1) {
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ type: 1 }),
-    };
-  }
 
   // Handle commands with deferred response
   if (interaction.type === 2) {
@@ -140,6 +127,16 @@ exports.handler = async (event) => {
     // Return the defer response immediately
     return deferResponse;
   }
+
+  // Handle PING
+  if (interaction.type === 1)
+    return {
+      statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ type: 1 }),
+    };
 
   return { statusCode: 400, body: "Unknown interaction type" };
 };
