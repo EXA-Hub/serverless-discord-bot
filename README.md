@@ -50,7 +50,7 @@
 
 ```bash
 # استنساخ المشروع
-git clone https://github.com/EXA-Hub/serverless-discord-bot-netlify.git
+git clone https://github.com/EXA-Hub/serverless-discord-bot.git
 cd serverless-discord-bot-netlify
 
 # تثبيت اعتماديات المشروع
